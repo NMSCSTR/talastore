@@ -7,6 +7,9 @@
 
     <div class="flex flex-col md:flex-row md:items-center justify-between gap-6">
         <div class="flex items-center gap-4">
+            <a href="{{ route('admin.dashboard') }}" class="h-12 w-12 bg-white border border-gray-100 rounded-2xl flex items-center justify-center text-gray-400 hover:text-blue-600 hover:border-blue-100 transition-all shadow-sm group">
+                <i class="material-icons-outlined group-hover:-translate-x-1 transition-transform">arrow_back</i>
+            </a>
             <div class="h-14 w-14 bg-blue-600 rounded-2xl flex items-center justify-center shadow-lg shadow-blue-200">
                 <i class="material-icons-outlined text-white text-3xl">people_alt</i>
             </div>

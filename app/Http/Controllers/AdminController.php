@@ -1,11 +1,13 @@
 <?php
 namespace App\Http\Controllers;
 
+use App\Models\Category;
 use App\Models\Order;
 use App\Models\Product;
 use App\Models\Supplier;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Hash;
 
 class AdminController extends Controller
@@ -60,7 +62,7 @@ class AdminController extends Controller
             'phone'    => 'nullable|string|max:20',
             'address'  => 'nullable|string',
         ]);
-        
+
         $updateData = collect($data)->except('password')->all();
         $user->fill($updateData);
 
@@ -81,4 +83,69 @@ class AdminController extends Controller
         $user->delete();
         return back()->with('welcome', 'User deleted successfully!');
     }
+
+    public function products()
+    {
+        return view('admin.products', [
+            'products'   => Product::with(['category', 'supplier'])->latest()->get(),
+            'categories' => Category::all(),
+            'suppliers'  => Supplier::all(),
+        ]);
+    }
+
+    public function storeProduct(Request $request)
+    {
+        $data = $request->validate([
+            'name'        => 'required|string|max:255',
+            'supplier_id' => 'required|exists:suppliers,id',
+            'category_id' => 'required|exists:categories,id',
+            'price'       => 'required|numeric|min:0',
+            'stock'       => 'required|integer|min:0',
+            'description' => 'nullable|string',
+            'image'       => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
+        ]);
+
+        if ($request->hasFile('image')) {
+            $data['image'] = $request->file('image')->store('products', 'public');
+        }
+
+        Product::create($data);
+        return back()->with('welcome', 'Product added to inventory!');
+    }
+
+    // Update Product
+    public function updateProduct(Request $request, Product $product)
+    {
+        $data = $request->validate([
+            'name'        => 'required|string|max:255',
+            'supplier_id' => 'required|exists:suppliers,id',
+            'category_id' => 'required|exists:categories,id',
+            'price'       => 'required|numeric|min:0',
+            'stock'       => 'required|integer|min:0',
+            'description' => 'nullable|string',
+            'image'       => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
+        ]);
+
+        if ($request->hasFile('image')) {
+            // Delete old image if it exists
+            if ($product->image) {
+                Storage::disk('public')->delete($product->image);
+            }
+            $data['image'] = $request->file('image')->store('products', 'public');
+        }
+
+        $product->update($data);
+        return back()->with('welcome', 'Product updated successfully!');
+    }
+
+// Delete Product
+    public function destroyProduct(Product $product)
+    {
+        if ($product->image) {
+            Storage::disk('public')->delete($product->image);
+        }
+        $product->delete();
+        return back()->with('welcome', 'Product removed from inventory.');
+    }
+
 }

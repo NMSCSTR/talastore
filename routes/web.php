@@ -18,10 +18,17 @@ Route::middleware(['auth'])->group(function () {
     // Admin Only Routes
     Route::middleware(['role:admin'])->group(function () {
         Route::get('/admin/dashboard', [AdminController::class, 'index'])->name('admin.dashboard');
+        //User's Routes
         Route::get('/admin/users', [AdminController::class, 'users'])->name('admin.users');
         Route::post('/admin/users', [AdminController::class, 'storeUser'])->name('admin.users.store');
         Route::delete('/admin/users/{user}', [AdminController::class, 'destroyUser'])->name('admin.users.destroy');
         Route::put('/admin/users/{user}', [AdminController::class, 'updateUser'])->name('admin.users.update');
+        //Product's Routes
+        Route::get('/admin/products', [AdminController::class, 'products'])->name('admin.products');
+        Route::post('/admin/products', [AdminController::class, 'storeProduct'])->name('admin.products.store');
+        Route::put('/admin/products/{product}', [AdminController::class, 'updateProduct'])->name('admin.products.update');
+        Route::delete('/admin/products/{product}', [AdminController::class, 'destroyProduct'])->name('admin.products.destroy');
+
     });
 
     // Supplier Only Routes
