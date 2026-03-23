@@ -1,5 +1,7 @@
 <?php
 use App\Http\Controllers\ProductController;
+use App\Http\Controllers\AdminController;
+use App\Http\Controllers\AuthController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', [ProductController::class, 'index'])->name('home');
@@ -8,13 +10,14 @@ Route::get('/', [ProductController::class, 'index'])->name('home');
 Route::middleware('guest')->group(function () {
     Route::get('/login', function () {return view('auth.login');})->name('login');
     Route::get('/register', function () {return view('auth.register');})->name('register');
+    Route::post('/login', [AuthController::class, 'login']);
 });
 
 Route::middleware(['auth'])->group(function () {
 
     // Admin Only Routes
     Route::middleware(['role:admin'])->group(function () {
-        // Route::get('/admin/dashboard', [AdminController::class, 'index']);
+        Route::get('/admin/dashboard', [AdminController::class, 'index'])->name('admin.dashboard');
     });
 
     // Supplier Only Routes
@@ -29,3 +32,5 @@ Route::middleware(['auth'])->group(function () {
     });
 
 });
+
+Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
