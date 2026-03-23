@@ -12,7 +12,12 @@ class ProductController extends Controller
      */
     public function index()
     {
-        //
+        $products = Product::with(['supplier', 'category'])
+            ->latest()
+            ->take(8) 
+            ->get();
+
+        return view('welcome', compact('products'));
     }
 
     /**
