@@ -58,7 +58,7 @@
         document.addEventListener('DOMContentLoaded', function () {
                 Swal.fire({
                     icon: 'success',
-                    title: 'Welcome!',
+                    title: 'TALA ONLINE STORE',
                     text: "{{ session('welcome') }}",
                     confirmButtonText: 'Thanks'
                 });
