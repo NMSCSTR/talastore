@@ -62,3 +62,11 @@ The Laravel framework is open-sourced software licensed under the [MIT license](
 # talastore
 Laravel Project for City Counselor Nido Tala
 >>>>>>> 9cfb03bc1b028da62cf455eadc15a7b7d37ed08a
+
+
+php artisan config:clear
+php artisan cache:clear
+php artisan route:clear
+php artisan view:clear
+php artisan optimize:clear
+php artisan optimize
