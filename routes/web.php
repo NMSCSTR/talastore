@@ -3,13 +3,14 @@ use App\Http\Controllers\ProductController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', [ProductController::class, 'index'])->name('home');
-Route::middleware(['auth'])->group(function () {
 
 // Guest Routes
-    Route::middleware('guest')->group(function () {
-        Route::get('/login', function () {return view('auth.login');})->name('login');
-        Route::get('/register', function () {return view('auth.register');})->name('register');
-    });
+Route::middleware('guest')->group(function () {
+    Route::get('/login', function () {return view('auth.login');})->name('login');
+    Route::get('/register', function () {return view('auth.register');})->name('register');
+});
+
+Route::middleware(['auth'])->group(function () {
 
     // Admin Only Routes
     Route::middleware(['role:admin'])->group(function () {
@@ -28,4 +29,3 @@ Route::middleware(['auth'])->group(function () {
     });
 
 });
-
