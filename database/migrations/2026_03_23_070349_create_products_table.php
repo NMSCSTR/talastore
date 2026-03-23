@@ -15,11 +15,12 @@ return new class extends Migration
             $table->id();
             $table->foreignId('supplier_id')->constrained()->onDelete('cascade');
             $table->foreignId('category_id')->constrained()->onDelete('cascade');
-            $table->string('name');
+            $table->string('name')->index();
             $table->text('description')->nullable();
             $table->decimal('price', 10, 2);
-            $table->integer('stock');
+            $table->integer('stock')->default(0);
             $table->string('image')->nullable();
+            $table->softDeletes(); // Adds 'deleted_at' column
             $table->timestamps();
         });
     }
