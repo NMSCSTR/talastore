@@ -13,7 +13,13 @@ return new class extends Migration
     {
         Schema::create('orders', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('user_id')->constrained()->onDelete('cascade');
+            // Make user_id nullable for guest checkout
+            $table->foreignId('user_id')->nullable()->constrained()->onDelete('set null');
+
+            // Add guest specific fields
+            $table->string('guest_email')->nullable();
+            $table->string('guest_name')->nullable();
+
             $table->decimal('total_amount', 10, 2);
             $table->enum('status', ['pending', 'paid', 'shipped', 'delivered', 'cancelled'])->default('pending');
             $table->string('payment_method');

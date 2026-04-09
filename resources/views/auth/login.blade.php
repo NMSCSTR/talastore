@@ -7,7 +7,7 @@
     <div class="max-w-md w-full space-y-8 bg-white p-10 rounded-2xl shadow-xl border border-gray-100" data-aos="zoom-in">
         <div>
             <div class="flex justify-center">
-                <img class="h-12 w-auto" src="https://clipground.com/images/book-logo-png-14.png" alt="Tala Logo">
+                <img class="h-12 w-auto" src="https://static.thenounproject.com/png/3173747-200.png" alt="Tala Logo">
             </div>
             <h2 class="mt-6 text-center text-3xl font-extrabold text-gray-900">
                 Welcome back
