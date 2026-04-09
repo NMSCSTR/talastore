@@ -19,11 +19,13 @@
 
                 <div class="h-6 w-px bg-gray-200 mx-2"></div>
 
-                {{-- Shopping Bag - Now visible to everyone --}}
-                <button class="relative text-gray-600 hover:text-blue-600 transition">
+                {{-- Shopping Bag --}}
+                <a href="{{ route('cart.index') }}" class="relative text-gray-600 hover:text-blue-600 transition">
                     <i class="fas fa-shopping-bag text-xl"></i>
-                    <span id="cart-count" class="absolute -top-2 -right-2 bg-blue-600 text-white text-[10px] font-bold h-5 w-5 rounded-full flex items-center justify-center border-2 border-white">0</span>
-                </button>
+                    <span id="cart-count" class="absolute -top-2 -right-2 bg-blue-600 text-white text-[10px] font-bold h-5 w-5 rounded-full flex items-center justify-center border-2 border-white">
+                        {{ count((array) session('cart')) }}
+                    </span>
+                </a>
 
                 @auth
                     <div class="flex items-center gap-6">
@@ -83,7 +85,6 @@
                 <div class="absolute -top-20 -right-20 w-96 h-96 bg-blue-100 rounded-full blur-[100px] opacity-60 animate-pulse"></div>
                 <div class="relative z-10 bg-gradient-to-tr from-blue-50 to-white p-4 rounded-[3rem] border border-white shadow-2xl">
                     <img src="https://illustrations.popsy.co/blue/online-shopping.svg" alt="Hero" class="w-full h-auto">
-
                     <div class="absolute bottom-8 -left-8 bg-white p-6 rounded-3xl shadow-2xl border border-gray-50 hidden sm:block animate-bounce-slow">
                         <div class="flex items-center gap-4">
                             <div class="h-12 w-12 bg-green-100 text-green-600 rounded-full flex items-center justify-center">
@@ -112,7 +113,7 @@
 
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
             @forelse($products as $product)
-            <div class="group bg-white rounded-[2rem] p-4 border border-transparent hover:border-blue-100 hover:shadow-2xl hover:shadow-blue-100/50 transition-all duration-500" data-aos="fade-up">
+            <div class="group bg-white rounded-[2rem] p-4 border border-transparent hover:border-blue-100 hover:shadow-2xl hover:shadow-blue-100/50 transition-all duration-500">
                 <div class="relative h-72 rounded-[1.5rem] overflow-hidden bg-gray-50">
                     <img src="{{ $product->image ? asset('storage/' . $product->image) : 'https://via.placeholder.com/400x400?text=' . urlencode($product->name) }}"
                         class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700">
@@ -135,7 +136,7 @@
                         </div>
 
                         <button
-                            onclick="handleAddToCart('{{ $product->name }}')"
+                            onclick="handleAddToCart('{{ $product->id }}', '{{ $product->name }}')"
                             class="bg-blue-600 text-white h-14 w-14 rounded-2xl flex items-center justify-center hover:bg-gray-900 transition-all duration-300 shadow-lg shadow-blue-200">
                             <i class="fas fa-plus text-lg"></i>
                         </button>
@@ -155,23 +156,35 @@
 
 @section('scripts')
 <script>
-    let cartCount = 0;
+    function handleAddToCart(productId, productName) {
+        fetch(`/cart/add/${productId}`, {
+            method: 'POST',
+            headers: {
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                'Content-Type': 'application/json',
+                'Accept': 'application/json'
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            document.getElementById('cart-count').innerText = data.count;
 
-    function handleAddToCart(productName) {
-        // Logic: Always allow adding to cart (Guest or Auth)
-        cartCount++;
-        document.getElementById('cart-count').innerText = cartCount;
-
-        Swal.fire({
-            icon: 'success',
-            title: 'Added to Basket',
-            html: `<b>${productName}</b> is ready for checkout.<br><small class="text-gray-500">You can checkout as a guest later!</small>`,
-            showConfirmButton: true,
-            confirmButtonText: 'View Cart',
-            showCancelButton: true,
-            cancelButtonText: 'Continue Shopping',
-            confirmButtonColor: '#2563eb',
-        });
+            Swal.fire({
+                icon: 'success',
+                title: 'Added to Basket',
+                html: `<b>${productName}</b> is ready for checkout.`,
+                showConfirmButton: true,
+                confirmButtonText: 'View Cart',
+                showCancelButton: true,
+                cancelButtonText: 'Continue Shopping',
+                confirmButtonColor: '#2563eb',
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    window.location.href = "{{ route('cart.index') }}";
+                }
+            });
+        })
+        .catch(error => console.error('Error:', error));
     }
 </script>
 @endsection

@@ -2,33 +2,49 @@
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\AuthController;
-use App\Http\Controllers\CartController; // New Controller
-use App\Http\Controllers\CheckoutController; // New Controller
+use App\Http\Controllers\CartController;
+use App\Http\Controllers\CheckoutController;
 use Illuminate\Support\Facades\Route;
 
-// Public Routes (Accessible by everyone)
+/*
+|--------------------------------------------------------------------------
+| Public Routes
+|--------------------------------------------------------------------------
+*/
 Route::get('/', [ProductController::class, 'index'])->name('home');
-Route::get('/cart', [CartController::class, 'index'])->name('cart.index');
 
-// Public Checkout Routes (The "Fork in the Road")
-// We keep these outside of 'guest' or 'auth' so everyone can see the cart/guest forms
+// Shopping Cart Actions
+Route::get('/cart', [CartController::class, 'index'])->name('cart.index');
+Route::post('/cart/add/{id}', [CartController::class, 'addToCart'])->name('cart.add');
+Route::post('/cart/remove', [CartController::class, 'remove'])->name('cart.remove');
+
+// Public Checkout (The "Fork")
 Route::get('/checkout/guest', [CheckoutController::class, 'guestIndex'])->name('checkout.guest');
 Route::post('/checkout/guest', [CheckoutController::class, 'processGuestCheckout'])->name('checkout.guest.post');
 
-// Guest-Only Routes (Redirects to dashboard if already logged in)
+/*
+|--------------------------------------------------------------------------
+| Guest Only (Redirects if Logged In)
+|--------------------------------------------------------------------------
+*/
 Route::middleware('guest')->group(function () {
     Route::get('/login', function () { return view('auth.login'); })->name('login');
     Route::get('/register', function () { return view('auth.register'); })->name('register');
     Route::post('/login', [AuthController::class, 'login']);
 });
 
-// Authenticated Routes
+/*
+|--------------------------------------------------------------------------
+| Authenticated Routes
+|--------------------------------------------------------------------------
+*/
 Route::middleware(['auth'])->group(function () {
 
-    // Auth-Only Checkout (For logged-in users)
+    // Member Checkout
     Route::get('/checkout', [CheckoutController::class, 'index'])->name('checkout.index');
+    Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
-    // Admin Only Routes
+    /* --- Admin Only --- */
     Route::middleware(['role:admin'])->group(function () {
         Route::get('/admin/dashboard', [AdminController::class, 'index'])->name('admin.dashboard');
 
@@ -49,15 +65,13 @@ Route::middleware(['auth'])->group(function () {
         });
     });
 
-    // Supplier Only Routes
+    /* --- Supplier Only --- */
     Route::middleware(['role:supplier'])->group(function () {
         // Route::get('/supplier/inventory', [ProductController::class, 'manage']);
     });
 
-    // Shared Admin/Supplier
+    /* --- Shared Roles --- */
     Route::middleware(['role:admin,supplier'])->group(function () {
         // Route::get('/reports', [ReportController::class, 'show']);
     });
 });
-
-Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
