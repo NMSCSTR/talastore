@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 class Supplier extends Model
 {
     protected $fillable = ['user_id', 'store_name', 'store_description'];
-    
+
     public function user()
     {
         return $this->belongsTo(User::class);

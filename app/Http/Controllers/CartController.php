@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Http\Controllers;
 
 use App\Models\Product;
@@ -9,7 +8,7 @@ class CartController extends Controller
 {
     public function index()
     {
-        $cart = session()->get('cart', []);
+        $cart  = session()->get('cart', []);
         $total = array_sum(array_map(fn($item) => $item['price'] * $item['quantity'], $cart));
 
         return view('cart', compact('cart', 'total'));
@@ -18,17 +17,17 @@ class CartController extends Controller
     public function addToCart(Request $request, $id)
     {
         $product = Product::findOrFail($id);
-        $cart = session()->get('cart', []);
+        $cart    = session()->get('cart', []);
 
-        // If product exists, increment quantity, else add new
-        if(isset($cart[$id])) {
+    
+        if (isset($cart[$id])) {
             $cart[$id]['quantity']++;
         } else {
             $cart[$id] = [
-                "name" => $product->name,
+                "name"     => $product->name,
                 "quantity" => 1,
-                "price" => $product->price,
-                "image" => $product->image
+                "price"    => $product->price,
+                "image"    => $product->image,
             ];
         }
 
@@ -38,9 +37,9 @@ class CartController extends Controller
 
     public function remove(Request $request)
     {
-        if($request->id) {
+        if ($request->id) {
             $cart = session()->get('cart');
-            if(isset($cart[$request->id])) {
+            if (isset($cart[$request->id])) {
                 unset($cart[$request->id]);
                 session()->put('cart', $cart);
             }

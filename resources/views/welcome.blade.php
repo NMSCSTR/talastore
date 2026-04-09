@@ -19,7 +19,6 @@
 
                 <div class="h-6 w-px bg-gray-200 mx-2"></div>
 
-                {{-- Shopping Bag --}}
                 <a href="{{ route('cart.index') }}" class="relative text-gray-600 hover:text-blue-600 transition">
                     <i class="fas fa-shopping-bag text-xl"></i>
                     <span id="cart-count" class="absolute -top-2 -right-2 bg-blue-600 text-white text-[10px] font-bold h-5 w-5 rounded-full flex items-center justify-center border-2 border-white">
@@ -74,9 +73,9 @@
                     Curating the finest local crafts and daily essentials, delivered with a touch of care.
                 </p>
                 <div class="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
-                    <a href="#shop" class="group bg-gray-900 text-white px-10 py-5 rounded-2xl font-bold hover:bg-blue-600 transition-all flex items-center justify-center gap-3">
-                        Start Shopping
-                        <i class="fas fa-arrow-right group-hover:translate-x-1 transition-transform"></i>
+                    <a href="#shop" class="group bg-gray-900 text-white px-10 py-5 rounded-2xl font-bold hover:bg-blue-600 transition-all flex flex-col items-center sm:items-start justify-center">
+                        <span class="flex items-center gap-3">Start Shopping <i class="fas fa-arrow-right group-hover:translate-x-1 transition-transform"></i></span>
+                        <span class="text-[10px] opacity-60 font-medium">Guest checkout enabled</span>
                     </a>
                 </div>
             </div>
@@ -91,8 +90,8 @@
                                 <i class="fas fa-bolt text-2xl"></i>
                             </div>
                             <div>
-                                <p class="text-sm font-black text-gray-900">Guest Checkout</p>
-                                <p class="text-xs text-gray-400">No account? No problem.</p>
+                                <p class="text-sm font-black text-gray-900">Guest Express</p>
+                                <p class="text-xs text-gray-400">Buy now, sign up later.</p>
                             </div>
                         </div>
                     </div>
@@ -115,30 +114,15 @@
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-10">
             @forelse($products as $product)
             <div class="group relative bg-white rounded-[2.5rem] overflow-hidden border border-gray-100 hover:shadow-[0_32px_64px_-16px_rgba(0,0,0,0.1)] transition-all duration-700">
-
-                {{-- Full View Image Container --}}
                 <div class="relative h-[420px] w-full overflow-hidden bg-gray-100">
                     <img src="{{ $product->image ? asset('storage/' . $product->image) : 'https://via.placeholder.com/600x800?text=' . urlencode($product->name) }}"
                         class="w-full h-full object-cover transform scale-105 group-hover:scale-110 group-hover:-rotate-1 transition-all duration-1000 @if($product->stock <= 0) grayscale opacity-60 @endif">
-
-                    {{-- Top Badges --}}
                     <div class="absolute top-5 left-5 right-5 flex justify-between items-start pointer-events-none">
                         <span class="bg-white/80 backdrop-blur-md text-gray-900 px-3 py-1.5 rounded-xl text-[10px] font-black uppercase tracking-widest shadow-sm border border-white/50">
                             {{ $product->category->name }}
                         </span>
-
-                        @if($product->stock > 0 && $product->stock <= 10)
-                            <span class="bg-amber-500 text-white px-3 py-1.5 rounded-xl text-[10px] font-black uppercase tracking-widest animate-pulse shadow-lg shadow-amber-200">
-                                Low Stock
-                            </span>
-                        @elseif($product->stock <= 0)
-                            <span class="bg-gray-900 text-white px-3 py-1.5 rounded-xl text-[10px] font-black uppercase tracking-widest shadow-lg">
-                                Sold Out
-                            </span>
-                        @endif
                     </div>
 
-                    {{-- Bottom Glass Overlay (Hidden until hover) --}}
                     <div class="absolute inset-x-4 bottom-4 translate-y-4 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-500 z-20">
                         <div class="bg-white/70 backdrop-blur-2xl p-5 rounded-[2rem] border border-white/50 shadow-2xl">
                             <div class="flex justify-between items-center">
@@ -152,23 +136,13 @@
                             </div>
                         </div>
                     </div>
-
-                    {{-- Dark Gradient Fade (Always visible at bottom for text readability) --}}
-                    <div class="absolute inset-x-0 bottom-0 h-32 bg-gradient-to-t from-black/20 to-transparent pointer-events-none"></div>
                 </div>
 
-                {{-- Static Details (Visible when not hovering) --}}
-                <div class="p-6 group-hover:opacity-0 transition-opacity duration-300">
-                    <div class="flex justify-between items-start">
-                        <div>
-                            <h3 class="font-black text-gray-900 text-xl tracking-tight">{{ $product->name }}</h3>
-                            <p class="text-sm text-gray-400 font-bold tracking-widest uppercase text-[10px] mt-1">{{ $product->stock }} Units Available</p>
-                        </div>
-                        <span class="text-xl font-black text-blue-600">₱{{ number_format($product->price, 0) }}</span>
-                    </div>
+                <div class="p-6 group-hover:opacity-0 transition-opacity duration-300 text-center">
+                    <h3 class="font-black text-gray-900 text-xl tracking-tight">{{ $product->name }}</h3>
+                    <span class="text-xl font-black text-blue-600">₱{{ number_format($product->price, 0) }}</span>
                 </div>
 
-                {{-- Quick Add Action (Floating Circular Button) --}}
                 @if($product->stock > 0)
                 <button
                     onclick="handleAddToCart('{{ $product->id }}', '{{ $product->name }}')"
@@ -179,11 +153,7 @@
             </div>
             @empty
             <div class="col-span-full text-center py-32 bg-white rounded-[4rem] border-2 border-dashed border-gray-100">
-                <div class="h-20 w-20 bg-gray-50 rounded-full flex items-center justify-center mx-auto mb-6">
-                    <i class="fas fa-box-open text-3xl text-gray-200"></i>
-                </div>
                 <h3 class="text-2xl font-black text-gray-900">No products found</h3>
-                <p class="text-gray-400 mt-2">Check back later for new arrivals.</p>
             </div>
             @endforelse
         </div>

@@ -5,7 +5,16 @@ use Illuminate\Database\Eloquent\Model;
 
 class Order extends Model
 {
-    protected $fillable = ['user_id', 'total_amount', 'status', 'payment_method'];
+    protected $fillable = [
+        'user_id',
+        'guest_email',
+        'guest_name',
+        'phone',
+        'address',
+        'total_amount',
+        'status',
+        'payment_method',
+    ];
 
     // Helper to check status
     public function isDelivered(): bool
